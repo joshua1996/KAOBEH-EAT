@@ -230,7 +230,7 @@
         <div class="views">
             <div class="view view-main">
                 <div class="page" data-page="intro">
-                    <div class="page-content"></div>
+                    <div class="page-content">
                         <div data-pagination='{"el": ".swiper-pagination", "hideOnClick": true}' class="swiper-container swiper-init demo-swiper">
                             <div class="swiper-pagination"></div>
                             <div class="swiper-wrapper">
@@ -239,20 +239,22 @@
                                 <div class="swiper-slide">
                                     <div class="block">
                                         <div class="row">
-                                            <a href="/home/" data-page="home" class="col button button-big">Get Start</a>
+                                            <a href="/home/" data-view=".view-main" class="col button button-big">Get Start</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
-
-
             </div>
 
 
         </div>
+
+
+    </div>
 
     </div>
     <!-- Path to Framework7 Library JS-->
@@ -261,9 +263,7 @@
     <script type="text/javascript" src="js/my-app.js"></script>
 
     <script>
-        var swiper = app.swiper.create('.swiper-container', {
-
-        });
+      
     </script>
 
 </body>

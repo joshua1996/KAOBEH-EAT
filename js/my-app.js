@@ -23,6 +23,17 @@ var mainView = app.views.create('.view-main', {
     url: '/'
 });
 
+
+
+
+  $$(document).on('page:init', '.page[data-name="home"]', function (e) {
+      console.log('htr');
+    //mainView.destroy();
+  })
+
+  $$(document).on('click', '.abc', function (e){
+    mainView.destroy();
+  })
 var swiper = app.swiper.create('.swiper-container', {
     pagination: {
         el: '.swiper-pagination',
