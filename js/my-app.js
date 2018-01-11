@@ -7,46 +7,69 @@ var app = new Framework7({
     // App id
     id: 'com.myapp.test',
     // Enable swipe panel
-    panel: {
-        swipe: 'left',
-    },
+
     // Add default routes
     routes: [{
+        path: '/',
+        url: 'index.html',
+    }, {
         path: '/home/',
         url: 'home.html',
     }, {
-        path: '/',
-        url: 'index.html',
+        path: '/place/',
+        url: 'place.html',
+    }, {
+        path: '/map/',
+        url: 'map.html',
     }],
 
 });
 
 var $$ = Dom7;
 
-var mainView = app.views.create('.view-main', {
-});
+var mainView = app.views.create('.view-main', {});
 
 $$(document).on('page:init', '.page[data-name="intro"]', function (e) {
     if (localStorage.getItem('skipIntro') === null) {
 
     } else {
         $$('.page[data-name="intro"]').remove();
-         mainView.router.navigate('/home/');
+        mainView.router.navigate('/home/');
+        console.log('cabc');
     }
 });
 
 app.init();
 
-$$(document).on('click', '#getStartBtn', function() {
+$$(document).on('page:init', '.page[data-name="map"]', function (e) {
+    var map = new GMaps({
+        el: '#map',
+        lat: -12.043333,
+        lng: -77.028333
+    });
+
+    GMaps.geolocate({
+        success: function (position) {
+            map.setCenter(position.coords.latitude, position.coords.longitude);
+        },
+        error: function (error) {
+            alert('Geolocation failed: ' + error.message);
+        },
+        not_supported: function () {
+            alert("Your browser does not support geolocation");
+        },
+        always: function () {
+        }
+    });
+});
+
+
+$$(document).on('click', '#getStartBtn', function () {
     localStorage.setItem('skipIntro', true);
-    
 });
 
 $$(document).on('page:afterout', '.page[data-name="intro"]', function (e) {
     $$('.page[data-name="intro"]').remove();
-});
-
-$$(document).on('page:init', '.page[data-name="home"]', function (e) {
 });
 
 
