@@ -5,7 +5,7 @@ var app = new Framework7({
     // App Name
     name: 'KaoBeh Eat',
     // App id
-    id: 'com.indieDream.kaobeheat',
+    id: 'com.myapp.test',
     // Enable swipe panel
 
     // Add default routes
@@ -79,6 +79,3 @@ var swiper = app.swiper.create('.swiper-container', {
         type: 'bullets',
     },
 });
-
-// git remote add 5apps git@5apps.com:joshua1996_kaobeheat.git
-// git push 5apps master
