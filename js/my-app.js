@@ -7,7 +7,6 @@ var app = new Framework7({
     // App id
     id: 'com.indieDream.kaobeheat',
     // Enable swipe panel
-
     // Add default routes
     routes: [{
         path: '/',
@@ -22,63 +21,57 @@ var app = new Framework7({
         path: '/map/',
         url: 'map.html',
     }],
-
 });
-
 var $$ = Dom7;
-
 var mainView = app.views.create('.view-main', {});
-
-$$(document).on('page:init', '.page[data-name="intro"]', function (e) {
-    if (localStorage.getItem('skipIntro') === null) {
-
-    } else {
+$$(document).on('page:init', '.page[data-name="intro"]', function(e) {
+    if (localStorage.getItem('skipIntro') === null) {} else {
         $$('.page[data-name="intro"]').remove();
         mainView.router.navigate('/home/');
         console.log('cabc');
     }
 });
-
 app.init();
-
-$$(document).on('page:init', '.page[data-name="map"]', function (e) {
+$$(document).on('page:init', '.page[data-name="map"]', function(e) {
     var map = new GMaps({
         el: '#map',
         lat: -12.043333,
         lng: -77.028333
     });
-
     GMaps.geolocate({
-        success: function (position) {
+        success: function(position) {
             map.setCenter(position.coords.latitude, position.coords.longitude);
+          //   $('<div/>').addClass('centerMarker').appendTo(map.getDiv());
+            // marker =  map.addMarker({
+            //     lat: position.coords.latitude,
+            //     lng: position.coords.longitude,
+            //     title: 'Lima',
+            //     click: function(e) {
+            //     }
+            // });
+           
         },
-        error: function (error) {
+        error: function(error) {
             alert('Geolocation failed: ' + error.message);
         },
-        not_supported: function () {
+        not_supported: function() {
             alert("Your browser does not support geolocation");
         },
-        always: function () {
+        always: function() {
         }
     });
 });
-
-
-$$(document).on('click', '#getStartBtn', function () {
+$$(document).on('click', '#getStartBtn', function() {
     localStorage.setItem('skipIntro', true);
 });
-
-$$(document).on('page:afterout', '.page[data-name="intro"]', function (e) {
+$$(document).on('page:afterout', '.page[data-name="intro"]', function(e) {
     $$('.page[data-name="intro"]').remove();
 });
-
-
 var swiper = app.swiper.create('.swiper-container', {
     pagination: {
         el: '.swiper-pagination',
         type: 'bullets',
     },
 });
-
 // git remote add 5apps git@5apps.com:joshua1996_kaobeheat.git
 // git push 5apps master
