@@ -1,0 +1,49 @@
+<div class="page" data-name="restaurant">
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="left">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="ios-only">返回</span>
+        </a>
+      </div>
+      <div class="title">餐厅</div>
+
+    </div>
+  </div>
+  <div class="page-content">
+
+  </div>
+
+  <script id="template" type="text/template7">
+    {{#each restaurant }}
+    <div class="card demo-card-header-pic">
+        <div style="background-image:url({{ img }})" class="card-header align-items-flex-end">Journey To Mountains</div>
+        <div class="card-content card-content-padding">
+          <p class="date">Posted on January 21, 2015</p>
+          <p>{{ name }}
+          </p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="link">Like</a>
+          <a href="#" class="link">Read more</a>
+        </div>
+      </div>
+      {{/each }}
+  </script>
+
+  <!-- <script>
+    var template = $$('#template').html();
+    // compile it with Template7
+    console.log(template);
+    var compiledTemplate = Template7.compile(template);
+
+    // Now we may render our compiled template by passing required context
+    var context = {
+      firstName: 'John',
+      lastName: 'Doe'
+    };
+    var html = compiledTemplate(context);
+    console.log(html);
+  </script> -->
+</div>
