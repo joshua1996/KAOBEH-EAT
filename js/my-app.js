@@ -26,6 +26,9 @@ var app = new Framework7({
     }, {
         path: '/restaurant/',
         url: 'restaurant.html',
+    }, {
+        path: '/food/:restaurant',
+        templateUrl: './food.html',
     }],
 });
 var $$ = Dom7;
@@ -34,7 +37,7 @@ $$(document).on('page:init', '.page[data-name="intro"]', function (e) {
     if (localStorage.getItem('skipIntro') === null) {} else {
         $$('.page[data-name="intro"]').remove();
         mainView.router.navigate('/home/');
-        console.log('ff');
+        console.log('fgf');
     }
 });
 app.init();
@@ -138,25 +141,37 @@ $$(document).on('page:init', '.page[data-name="restaurant"]', function () {
         lng: map.getCenter().lng()
     };
     app.request.json('http://localhost/kaobeh-eat-db/restaurant.php', data, function (data) {
-        var obj = {'restaurant': data};
-        console.log(obj);
+        console.log('gg');
+        var obj = {
+            'restaurant': data
+        };
         var template = $$('#template').html();
         var compiledTemplate = Template7.compile(template);
-
-        // Now we may render our compiled template by passing required context
-        // var context = {
-        //     firstName: 'John',
-        //     lastName: 'Doe'
-        // };
         var html = compiledTemplate(obj);
         $$('.page[data-name="restaurant"] .page-content').html(html);
     });
+});
 
+/**
+ * food.html
+ */
+$$(document).on('page:init', '.page[data-name="food"]', function (e) {
+    console.log(e.detail.route.params.restaurant);
+    var data = {
+        action: 'restaurantWithinRadius',
+        restaurantID: map.getCenter().lat()
+    };
+    app.request.json('http://localhost/kaobeh-eat-db/restaurant.php', data, function (data) {
 
-
-    //   $( "#restaurantList" ).load( "./template.html #template" );
-
-
+        var obj = {
+            'restaurant': data
+        };
+        var template = $$('#template').html();
+        var compiledTemplate = Template7.compile(template);
+        var html = compiledTemplate(obj);
+        $$('.page[data-name="restaurant"] .page-content').html(html);
+    });
+   
 });
 
 // git remote add 5apps git@5apps.com:joshua1996_kaobeheat.git
