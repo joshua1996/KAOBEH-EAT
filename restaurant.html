@@ -8,7 +8,7 @@
         </a>
       </div>
       <div class="title">餐厅</div>
-      
+
     </div>
   </div>
   <div class="page-content">
@@ -18,32 +18,17 @@
   <script id="template" type="text/template7">
     {{#each restaurant }}
     <div class="card demo-card-header-pic">
-        <div style="background-image:url('http://localhost/KAOBEH-EAT-db/img/{{ img }}');color: black;" class="card-header align-items-flex-end"></div>
-        <div class="card-content card-content-padding">
-          <p>{{ name }}</p>
-          <p>营业时间: {{ time }}</p>
-        
-        </div>
-        <div class="card-footer">
-          <a href="#" class="link"></a>
-          <a href="/food/{{restaurantID}}" class="link">订购</a>
-        </div>
+      <div style="background-image:url('{{@global.url}}img/restaurant/{{ restaurant_img }}');color: black;" class="card-header align-items-flex-end"></div>
+      <div class="card-content card-content-padding">
+        <p>{{ restaurant_name }}</p>
+        <p>营业时间: {{ restaurant_time }}</p>
+
       </div>
-      {{/each }}
+      <div class="card-footer">
+        <a href="#" class="link"></a>
+        <a href="/food/{{restaurant_restaurantID}}" class="link">订购</a>
+      </div>
+    </div>
+    {{/each }}
   </script>
-
-  <!-- <script>
-    var template = $$('#template').html();
-    // compile it with Template7
-    console.log(template);
-    var compiledTemplate = Template7.compile(template);
-
-    // Now we may render our compiled template by passing required context
-    var context = {
-      firstName: 'John',
-      lastName: 'Doe'
-    };
-    var html = compiledTemplate(context);
-    console.log(html);
-  </script> -->
 </div>

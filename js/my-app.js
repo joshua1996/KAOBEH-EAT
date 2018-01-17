@@ -1,3 +1,6 @@
+Template7.global = {
+    url: 'http://localhost/KAOBEH-EAT-db/'
+};
 var app = new Framework7({
     init: false,
     // App root element
@@ -9,8 +12,6 @@ var app = new Framework7({
     precompileTemplates: false,
     // Unabled pages rendering using Template7
     template7Pages: false,
-    // Enable swipe panel
-    // Add default routes
     routes: [{
         path: '/',
         url: 'index.html',
@@ -28,7 +29,10 @@ var app = new Framework7({
         url: 'restaurant.html',
     }, {
         path: '/food/:restaurant',
-        templateUrl: './food.html',
+        url: './food.html',
+    }, {
+        path: '/foodBuy/:foodID',
+        url: 'food_buy.html',
     }],
 });
 var $$ = Dom7;
@@ -37,7 +41,6 @@ $$(document).on('page:init', '.page[data-name="intro"]', function (e) {
     if (localStorage.getItem('skipIntro') === null) {} else {
         $$('.page[data-name="intro"]').remove();
         mainView.router.navigate('/home/');
-        console.log('fgf');
     }
 });
 app.init();
@@ -48,6 +51,15 @@ var swiper = app.swiper.create('.swiper-container', {
         type: 'bullets',
     },
 });
+
+/**
+ * home
+ */
+$$(document).on('page:init', '.page[data-name="home"]', function (e) {
+    Template7.global.abc = 'aaa';
+    console.log(Template7.global.abc);
+});
+
 
 /**
  * map.html
@@ -96,7 +108,7 @@ $$(document).on('click', '.mapfindrestaurent', function () {
         lat: map.getCenter().lat(),
         lng: map.getCenter().lng()
     };
-    app.request.json('http://localhost/kaobeh-eat-db/restaurant.php', data, function (data) {
+    app.request.json(Template7.global.url + 'restaurant.php', data, function (data) {
         var markers_data = [];
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
@@ -118,7 +130,7 @@ $$(document).on('click', '.mapfindrestaurent', function () {
 
         var location = [];
         $.each(data, function (i, v) {
-            if (map.checkGeofence(v.lat, v.lng, circle)) {
+            if (map.checkGeofence(v.restaurant_lat, v.restaurant_lng, circle)) {
                 location.push(v);
             }
         });
@@ -140,8 +152,7 @@ $$(document).on('page:init', '.page[data-name="restaurant"]', function () {
         lat: map.getCenter().lat(),
         lng: map.getCenter().lng()
     };
-    app.request.json('http://localhost/kaobeh-eat-db/restaurant.php', data, function (data) {
-        console.log('gg');
+    app.request.json(Template7.global.url + 'restaurant.php', data, function (data) {
         var obj = {
             'restaurant': data
         };
@@ -156,23 +167,51 @@ $$(document).on('page:init', '.page[data-name="restaurant"]', function () {
  * food.html
  */
 $$(document).on('page:init', '.page[data-name="food"]', function (e) {
-    console.log(e.detail.route.params.restaurant);
     var data = {
-        action: 'restaurantWithinRadius',
-        restaurantID: map.getCenter().lat()
+        action: 'findFoodByRestaurant',
+        restaurantID: e.detail.route.params.restaurant
     };
-    app.request.json('http://localhost/kaobeh-eat-db/restaurant.php', data, function (data) {
-
+    app.request.json(Template7.global.url + 'restaurant.php', data, function (data) {
+        var groupedData = _.groupBy(data, 'food_category');
         var obj = {
-            'restaurant': data
+            'restaurant': data,
+            'index': groupedData
         };
-        var template = $$('#template').html();
+        Template7.global.foodlist = data;
+        var template = $$('#template_category').html();
         var compiledTemplate = Template7.compile(template);
         var html = compiledTemplate(obj);
-        $$('.page[data-name="restaurant"] .page-content').html(html);
+        $$('.page[data-name="food"] .page-content').html(html);
     });
-   
 });
+
+/**
+ * food_buy.html
+ */
+$$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
+    var pickerDevice = app.picker.create({
+        inputEl: '#demo-picker-device',
+        cols: [{
+            textAlign: 'center',
+            values: (function () {
+                var arr = [];
+                for (var i = 1; i <= 59; i++) {
+                    arr.push(i);
+                }
+                return arr;
+            })(),
+        }]
+    });
+
+    $('.foodBuyTitle').text('aa');
+    var data = {
+        action: 'foodDetail',
+        foodID: e.detail.route.params.foodID
+    };
+
+});
+
+
 
 // git remote add 5apps git@5apps.com:joshua1996_kaobeheat.git
 // git push 5apps master
