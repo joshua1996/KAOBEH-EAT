@@ -1,6 +1,10 @@
+//phone must enable wifi to access google map locate!!!
+
 Template7.global = {
-    url: 'http://localhost/KAOBEH-EAT-db/'
+    url: 'http://localhost/kaobeh-eat-db/'
 };
+//http://kaobeheat.bojioong.xyz/
+//http://localhost/kaobeh-eat-db/
 var app = new Framework7({
     init: false,
     // App root element
@@ -28,7 +32,7 @@ var app = new Framework7({
         path: '/restaurant/',
         url: 'restaurant.html',
     }, {
-        path: '/food/:restaurant',
+        path: '/food/:restaurant/:index',
         url: './food.html',
     }, {
         path: '/foodBuy/:foodID',
@@ -56,7 +60,7 @@ var swiper = app.swiper.create('.swiper-container', {
  * home
  */
 $$(document).on('page:init', '.page[data-name="home"]', function (e) {
-    Template7.global.abc = 'aaa';
+    Template7.global.abc = 'adaa';
     console.log(Template7.global.abc);
 });
 
@@ -72,8 +76,10 @@ $$(document).on('page:init', '.page[data-name="map"]', function (e) {
         el: '#map',
         lat: -12.043333,
         lng: -77.028333
+
     });
     GMaps.geolocate({
+        enableHighAccuracy: false,
         success: function (position) {
             map.setCenter(position.coords.latitude, position.coords.longitude);
         },
@@ -127,7 +133,6 @@ $$(document).on('click', '.mapfindrestaurent', function () {
             }
         }
         map.addMarkers(markers_data);
-
         var location = [];
         $.each(data, function (i, v) {
             if (map.checkGeofence(v.restaurant_lat, v.restaurant_lng, circle)) {
@@ -135,7 +140,6 @@ $$(document).on('click', '.mapfindrestaurent', function () {
             }
         });
         if (location.length > 0) {
-            // localStorage.setItem('availableLocation', JSON.stringify(location));
             mainView.router.navigate('/restaurant/');
         } else {
             app.dialog.alert('附近没有餐厅！');
@@ -160,13 +164,16 @@ $$(document).on('page:init', '.page[data-name="restaurant"]', function () {
         var compiledTemplate = Template7.compile(template);
         var html = compiledTemplate(obj);
         $$('.page[data-name="restaurant"] .page-content').html(html);
+        Template7.global.restaurant = data;
     });
+   
 });
 
 /**
  * food.html
  */
 $$(document).on('page:init', '.page[data-name="food"]', function (e) {
+    $('.foodTitle').text(Template7.global.restaurant[e.detail.route.params.index].restaurant_name);
     var data = {
         action: 'findFoodByRestaurant',
         restaurantID: e.detail.route.params.restaurant
@@ -177,6 +184,9 @@ $$(document).on('page:init', '.page[data-name="food"]', function (e) {
             'restaurant': data,
             'index': groupedData
         };
+        console.log(data);
+        console.log(groupedData);
+        console.log(obj);
         Template7.global.foodlist = data;
         var template = $$('#template_category').html();
         var compiledTemplate = Template7.compile(template);
@@ -184,7 +194,7 @@ $$(document).on('page:init', '.page[data-name="food"]', function (e) {
         $$('.page[data-name="food"] .page-content').html(html);
     });
 });
-
+//{{ food_name }} @key
 /**
  * food_buy.html
  */
