@@ -12,32 +12,42 @@
     </div>
     <div class="page-content">
         <div class="card demo-card-header-pic">
-            <div style="background-image:url(http://lorempixel.com/1000/600/nature/3/)" class="card-header align-items-flex-end">Journey To Mountains</div>
+            <div style="background-image:url(http://lorempixel.com/1000/600/nature/3/)" class="card-header align-items-flex-end foodImg"></div>
             <div class="card-content card-content-padding">
-                <p class="date">Posted on January 21, 2015</p>
                 <p>Quisque eget vestibulum nulla. Quisque quis dui quis ex ultricies efficitur vitae non felis. Phasellus quis
                     nibh hendrerit...</p>
             </div>
         </div>
 
-        <div class="block-title">数量</div>
-        <div class="list no-hairlines-md">
+        <form class="list" id="my-form">
             <ul>
                 <li>
                     <div class="item-content item-input">
                         <div class="item-inner">
+                            <div class="item-title item-label">数量</div>
                             <div class="item-input-wrap">
-                                <input type="text" placeholder="1" readonly="readonly" id="demo-picker-device" value="1"/>
+                                <input type="text" placeholder="1" readonly="readonly" id="demo-picker-device" value="1" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">Remarks</div>
+                            <div class="item-input-wrap">
+                                <textarea placeholder="Bio"></textarea>
                             </div>
                         </div>
                     </div>
                 </li>
             </ul>
-        </div>
+        </form>
+
 
         <div class="block">
 
-            <button class="col button button-big button-fill">Fill</button>
+            <button class="col button button-big button-fill">ADD TO CART<span class="price" style="float:right;">RM</span></button>
         </div>
 
     </div>

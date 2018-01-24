@@ -35,7 +35,7 @@ var app = new Framework7({
         path: '/food/:restaurant/:index',
         url: './food.html',
     }, {
-        path: '/foodBuy/:foodID',
+        path: '/foodBuy/:foodID/:category/:index',
         url: 'food_buy.html',
     }],
 });
@@ -60,8 +60,7 @@ var swiper = app.swiper.create('.swiper-container', {
  * home
  */
 $$(document).on('page:init', '.page[data-name="home"]', function (e) {
-    Template7.global.abc = 'adaa';
-    console.log(Template7.global.abc);
+    console.log('abc');
 });
 
 
@@ -184,10 +183,8 @@ $$(document).on('page:init', '.page[data-name="food"]', function (e) {
             'restaurant': data,
             'index': groupedData
         };
-        console.log(data);
-        console.log(groupedData);
         console.log(obj);
-        Template7.global.foodlist = data;
+        Template7.global.foodlist = groupedData;
         var template = $$('#template_category').html();
         var compiledTemplate = Template7.compile(template);
         var html = compiledTemplate(obj);
@@ -199,6 +196,8 @@ $$(document).on('page:init', '.page[data-name="food"]', function (e) {
  * food_buy.html
  */
 $$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
+    $('.foodImg').css('background-image', 'url('+Template7.global.url+'img/food/'+Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_img+')');
+    $('.foodBuyTitle').text(Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_name);
     var pickerDevice = app.picker.create({
         inputEl: '#demo-picker-device',
         cols: [{
@@ -213,7 +212,11 @@ $$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
         }]
     });
 
-    $('.foodBuyTitle').text('aa');
+    pickerDevice.on('close', function(picker, values, displayValues){
+        console.log(picker.getValue() * Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_price);
+        $('.price').text(picker.getValue() * Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_price);
+    });
+
     var data = {
         action: 'foodDetail',
         foodID: e.detail.route.params.foodID

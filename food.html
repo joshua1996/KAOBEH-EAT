@@ -17,7 +17,7 @@
 
     <script id="template_category" type="text/template7">
         <div class="card demo-card-header-pic">
-            <div style="background-image:url('{{@global.url}}img/restaurant/{{ restaurant.0.restaurant_img }}')" valign="bottom" class="card-header"></div>
+            <div data-background="{{@global.url}}img/restaurant/{{ restaurant.0.restaurant_img }}" valign="bottom" class="card-header lazy lazy-fade-in"></div>
             <div class="card-content card-content-padding">
                 <p class="date">{{ restaurant.0.restaurant_name }}</p>
                 <p></p>
@@ -39,15 +39,15 @@
                             <div class="list media-list">
                                 <ul>
                                     {{#each this }}
-                                    <li  foodindex="{{@index}}">
-                                        <a href="/foodBuy/{{ food_foodID }}" class="item-link item-content">
+                                    <li  foodindex="{{ @index }}">
+                                        <a href="/foodBuy/{{ food_foodID }}/{{ ../@key }}/{{ @index }}" class="item-link item-content">
                                             <div class="item-media">
-                                                <img src="{{@global.url}}img/food/{{ food_img }}" width="80" />
+                                                <img class="lazy lazy-fade-in" data-src="{{@global.url}}img/food/{{ food_img }}" width="80" />
                                             </div>
                                             <div class="item-inner">
                                                 <div class="item-title-row">
                                                     <div class="item-title">{{ food_name }}</div>
-                                                    <div class="item-after">$15</div>
+                                                    <div class="item-after">RM {{ food_price }}</div>
                                                 </div>
                                                 <div class="item-subtitle">Beatles</div>
                                                 <div class="item-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sagittis tellus

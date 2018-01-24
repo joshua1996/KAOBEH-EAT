@@ -18,7 +18,7 @@
   <script id="template" type="text/template7">
     {{#each restaurant }}
     <div class="card demo-card-header-pic">
-      <div style="background-image:url('{{@global.url}}img/restaurant/{{ restaurant_img }}');color: black;" class="card-header align-items-flex-end"></div>
+      <div data-background="{{@global.url}}img/restaurant/{{ restaurant_img }}" style="color: black;" class="card-header align-items-flex-end lazy lazy-fade-in"></div>
       <div class="card-content card-content-padding">
         <p>{{ restaurant_name }}</p>
         <p>营业时间: {{ restaurant_time }}</p>
