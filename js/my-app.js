@@ -59,8 +59,44 @@ var swiper = app.swiper.create('.swiper-container', {
 /**
  * home
  */
+var db;
 $$(document).on('page:init', '.page[data-name="home"]', function (e) {
-    console.log('abc');
+    console.log('aa');
+
+    const customerData = [{
+            foodID: "444-44-4444",
+            name: "Bill",
+            age: 35,
+            email: "bill@company.com"
+        },
+        {
+            foodID: "555-55-5555",
+            name: "Donna",
+            age: 32,
+            email: "donna@home.org"
+        }
+    ];
+    const dbName = "KaoBehEat";
+
+    var request = indexedDB.open(dbName, 1);
+
+    request.onsuccess = function (event) {
+        db = this.result;
+    };
+    request.onerror = function (event) {
+        // 错误处理程序在这里。
+    };
+    request.onupgradeneeded = function (event) {
+        // 创建一个对象存储空间来持有有关我们客户的信息。
+        // 我们将使用 "ssn" 作为我们的 key path 因为它保证是唯一的。
+        var objectStore = event.currentTarget.result.createObjectStore("cart", {
+            keyPath: "foodID"
+        });
+    };
+
+
+
+
 });
 
 
@@ -71,6 +107,10 @@ $$(document).on('page:init', '.page[data-name="home"]', function (e) {
 var circle;
 var map;
 $$(document).on('page:init', '.page[data-name="map"]', function (e) {
+    console.log(db);
+    var transaction = db.transaction(["cart"], "readwrite");
+    var objectStore = transaction.objectStore("cart");
+    var request = objectStore.add({ foodID:'abc' });
     map = new GMaps({
         el: '#map',
         lat: -12.043333,
@@ -165,7 +205,7 @@ $$(document).on('page:init', '.page[data-name="restaurant"]', function () {
         $$('.page[data-name="restaurant"] .page-content').html(html);
         Template7.global.restaurant = data;
     });
-   
+
 });
 
 /**
@@ -196,7 +236,8 @@ $$(document).on('page:init', '.page[data-name="food"]', function (e) {
  * food_buy.html
  */
 $$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
-    $('.foodImg').css('background-image', 'url('+Template7.global.url+'img/food/'+Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_img+')');
+    $('.price').text('RM ' + (parseFloat(Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_price)).toFixed(2));
+    $('.foodImg').css('background-image', 'url(' + Template7.global.url + 'img/food/' + Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_img + ')');
     $('.foodBuyTitle').text(Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_name);
     var pickerDevice = app.picker.create({
         inputEl: '#demo-picker-device',
@@ -212,15 +253,20 @@ $$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
         }]
     });
 
-    pickerDevice.on('close', function(picker, values, displayValues){
+    pickerDevice.on('close', function (picker, values, displayValues) {
         console.log(picker.getValue() * Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_price);
-        $('.price').text(picker.getValue() * Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_price);
+        $('.price').text('RM ' + (picker.getValue() * Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_price).toFixed(2));
     });
 
     var data = {
         action: 'foodDetail',
         foodID: e.detail.route.params.foodID
     };
+
+});
+
+$$(document).on('click', '.addToCart', function () {
+
 
 });
 
