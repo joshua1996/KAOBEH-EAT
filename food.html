@@ -8,7 +8,14 @@
                 </a>
             </div>
             <div class="title foodTitle">食物</div>
-
+            <div class="right">
+                <a href="/cart/" class="link">
+                    <i class="icon fas fa-shopping-cart">
+                        <span class="cartBadge badge color-red">0</span>
+                    </i>
+                    <span class="ios-only"></span>
+                </a>
+            </div>
         </div>
     </div>
     <div class="page-content">
@@ -39,7 +46,7 @@
                             <div class="list media-list">
                                 <ul>
                                     {{#each this }}
-                                    <li  foodindex="{{ @index }}">
+                                    <li foodindex="{{ @index }}">
                                         <a href="/foodBuy/{{ food_foodID }}/{{ ../@key }}/{{ @index }}" class="item-link item-content">
                                             <div class="item-media">
                                                 <img class="lazy lazy-fade-in" data-src="{{@global.url}}img/food/{{ food_img }}" width="80" />
