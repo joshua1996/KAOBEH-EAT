@@ -40,13 +40,16 @@ var app = new Framework7({
     }, {
         path: '/cart/',
         url: 'cart.html',
+    }, {
+        path: '/foodBuyUpdate/:orderID',
+        url: 'food_buy_update.html',
     }],
 });
 var $$ = Dom7;
 var mainView = app.views.create('.view-main', {});
-$$(document).on('page:init', '.page[data-name="intro"]', function (e) {
+$(document).on('page:init', '.page[data-name="intro"]', function (e) {
     if (localStorage.getItem('skipIntro') === null) {} else {
-        $$('.page[data-name="intro"]').remove();
+        $('.page[data-name="intro"]').remove();
         mainView.router.navigate('/home/');
     }
 });
@@ -63,7 +66,7 @@ var swiper = app.swiper.create('.swiper-container', {
  * home
  */
 var db;
-$$(document).on('page:init', '.page[data-name="home"]', function (e) {
+$(document).on('page:init', '.page[data-name="home"]', function (e) {
     console.log('aa');
 
     const customerData = [{
@@ -89,7 +92,7 @@ $$(document).on('page:init', '.page[data-name="home"]', function (e) {
     request.onerror = function (event) {};
     request.onupgradeneeded = function (event) {
         var objectStore = event.currentTarget.result.createObjectStore("cart", {
-            keyPath: "foodID"
+            keyPath: "orderID"
         });
         // objectStore.createIndex('foodID', 'foodID', {
         //     unique: true
@@ -104,7 +107,7 @@ $$(document).on('page:init', '.page[data-name="home"]', function (e) {
 
 var circle;
 var map;
-$$(document).on('page:init', '.page[data-name="map"]', function (e) {
+$(document).on('page:init', '.page[data-name="map"]', function (e) {
 
     map = new GMaps({
         el: '#map',
@@ -127,14 +130,14 @@ $$(document).on('page:init', '.page[data-name="map"]', function (e) {
     });
 });
 
-$$(document).on('click', '#getStartBtn', function () {
+$(document).on('click', '#getStartBtn', function () {
     localStorage.setItem('skipIntro', true);
 });
-$$(document).on('page:afterout', '.page[data-name="intro"]', function (e) {
-    $$('.page[data-name="intro"]').remove();
+$(document).on('page:afterout', '.page[data-name="intro"]', function (e) {
+    $('.page[data-name="intro"]').remove();
 });
 
-$$(document).on('click', '.mapfindrestaurent', function () {
+$(document).on('click', '.mapfindrestaurent', function () {
     app.dialog.preloader();
     circle = map.drawCircle({
         lat: map.getCenter().lat(),
@@ -186,19 +189,19 @@ $$(document).on('click', '.mapfindrestaurent', function () {
 
 /**
  * restaurant.html
+ * FIXME: restaurant page - open cart - no list !!
  */
-$$(document).on('page:init', '.page[data-name="restaurant"]', function () {
+$(document).on('page:init', '.page[data-name="restaurant"]', function () {
     var transaction = db.transaction(["cart"], "readwrite");
     var objectStore = transaction.objectStore("cart");
     var request = objectStore.count();
     request.onsuccess = function (event) {
         if (request.result > 0) {
-            $$('.cartBadge').text(request.result);
+            $('.cartBadge').text(request.result);
         } else {
-            $$('.cartBadge').css('display', 'none');
+            $('.cartBadge').css('display', 'none');
         }
     };
-
 
     var data = {
         action: 'restaurantWithinRadius',
@@ -209,10 +212,10 @@ $$(document).on('page:init', '.page[data-name="restaurant"]', function () {
         var obj = {
             'restaurant': data
         };
-        var template = $$('#template').html();
+        var template = $('#template').html();
         var compiledTemplate = Template7.compile(template);
         var html = compiledTemplate(obj);
-        $$('.page[data-name="restaurant"] .page-content').html(html);
+        $('.page[data-name="restaurant"] .page-content').html(html);
         Template7.global.restaurant = data;
     });
 
@@ -221,15 +224,15 @@ $$(document).on('page:init', '.page[data-name="restaurant"]', function () {
 /**
  * food.html
  */
-$$(document).on('page:init', '.page[data-name="food"]', function (e) {
+$(document).on('page:init', '.page[data-name="food"]', function (e) {
     var transaction = db.transaction(["cart"], "readwrite");
     var objectStore = transaction.objectStore("cart");
     var request = objectStore.count();
     request.onsuccess = function (event) {
         if (request.result > 0) {
-            $$('.cartBadge').text(request.result);
+            $('.cartBadge').text(request.result);
         } else {
-            $$('.cartBadge').css('display', 'none');
+            $('.cartBadge').css('display', 'none');
         }
     };
 
@@ -245,18 +248,17 @@ $$(document).on('page:init', '.page[data-name="food"]', function (e) {
             'index': groupedData
         };
         Template7.global.foodlist = groupedData;
-        var template = $$('#template_category').html();
+        var template = $('#template_category').html();
         var compiledTemplate = Template7.compile(template);
         var html = compiledTemplate(obj);
-        $$('.page[data-name="food"] .page-content').html(html);
+        $('.page[data-name="food"] .page-content').html(html);
     });
 });
 
 /**
  * food_buy.html
  */
-$$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
-
+$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
     var quantityV = 1;
     var totalPrice = 0;
     console.log(Template7.global.foodlist);
@@ -276,15 +278,18 @@ $$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
             })(),
         }]
     });
+    pickerDevice.setValue([1]);
 
     var transaction = db.transaction(["cart"], "readwrite");
     var objectStore = transaction.objectStore("cart");
     var request = objectStore.get(Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_foodID);
     request.onsuccess = function (event) {
-        if (request.result != null) {
-            quantityV = request.result.quantity;
-            pickerDevice.setValue([request.result.quantity]);
-        }
+        // if (request.result != null) {
+        //     quantityV = request.result.quantity;
+        //     pickerDevice.setValue([request.result.quantity]);
+        // }else{
+        //     pickerDevice.setValue([1]);
+        // }
     };
 
     pickerDevice.on('close', function (picker, values, displayValues) {
@@ -298,12 +303,8 @@ $$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
         foodID: e.detail.route.params.foodID
     };
 
-    /**
-     * FIXME: 
-     */
-    $$(document).on('click', '.addToCart', function () {
+    $(document).off('click').on('click', '.addToCart', function () {
         if (totalPrice == 0) {
-            console.log(pickerDevice.getValue());
             totalPrice = (pickerDevice.getValue()[0] * Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_price).toFixed(2);
         }
 
@@ -313,12 +314,14 @@ $$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
         request1.onsuccess = function (event) {
             if (request1.result.length == 0 || Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_restaurantID == request1.result[0].restaurantID) {
                 var request = objectStore.put({
+                    orderID: String(new Date().getTime()),
                     foodID: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_foodID,
                     foodName: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_name,
                     quantity: quantityV,
                     price: totalPrice,
                     restaurantID: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_restaurantID,
-                    restaurantImg: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_img
+                    restaurantImg: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_img,
+                    remark: $('.remark').val()
                 });
                 request.onsuccess = function (evt) {
                     console.debug("Insertion in DB successful");
@@ -334,12 +337,14 @@ $$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
                     var objectStoreRequest = objectStore.clear();
                     objectStoreRequest.onsuccess = function (event) {
                         var request = objectStore.put({
+                            orderID: new Date().getTime(),
                             foodID: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_foodID,
                             foodName: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_name,
                             quantity: quantityV,
                             price: totalPrice,
                             restaurantID: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_restaurantID,
-                            restaurantImg: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_img
+                            restaurantImg: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_img,
+                            remark: $('.remark').val()
                         });
                         request.onsuccess = function (evt) {
                             console.debug("Insertion in DB successful");
@@ -355,29 +360,35 @@ $$(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
 /**
  * cart.html
  */
-$$(document).on('page:init', '.page[data-name="cart"]', function (e) {
+$(document).on('page:init', '.page[data-name="cart"]', function (e) {
     var transaction = db.transaction(["cart"], "readwrite");
     var objectStore = transaction.objectStore("cart");
     var request = objectStore.getAll();
     request.onsuccess = function (event) {
-        $$('.restaurantImg').attr('data-background', Template7.global.url + 'img/restaurant/' + request.result[0].restaurantImg);
-
+        $('.restaurantImg').attr('data-background', Template7.global.url + 'img/restaurant/' + request.result[0].restaurantImg);
         var obj = {
             'cartFoodList': request.result
         };
-        console.log(obj);
-        var template = $$('#template').html();
+        var template = $('#template').html();
         var compiledTemplate = Template7.compile(template);
         var html = compiledTemplate(obj);
-        $$('.page[data-name="cart"] .page-content .list ul').html(html);
+        $('.page[data-name="cart"] .page-content .list ul').html(html);
     };
 });
 
-
 /**
- * TODO: add cart page
- *      
+ * food_buy_update.html
  */
+$(document).on('page:init', '.page[data-name="foodBuyUpdate"]', function (e) {
+    var transaction = db.transaction(["cart"], "readwrite");
+    var objectStore = transaction.objectStore("cart");
+    var request = objectStore.get(e.detail.route.params.orderID);
+    request.onsuccess = function (event) {
+        console.log(request);
+        $('.foodImg').css('background-image', 'url(' + Template7.global.url + 'img/food/' + request.result.restaurantImg + ')');
+    };
+    // 
+});
 
 
 // git remote add 5apps git@5apps.com:joshua1996_kaobeheat.git

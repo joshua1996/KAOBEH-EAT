@@ -29,9 +29,13 @@
     <script id="template" type="text/template7">
         {{#each cartFoodList}}
         <li>
-            <a href="#" class="item-link item-content">
+            <a href="/foodBuyUpdate/{{ orderID }}" class="item-link item-content">
                 <div class="item-inner">
-                    <div class="item-title">{{ quantity }}X {{ foodName }}</div>
+                    <div class="item-title">{{ quantity }}X {{ foodName }}
+                        <div class="item-footer">
+                            {{ remark }}
+                        </div>
+                    </div>
                     <div class="item-after">RM {{ price }}</div>
                 </div>
             </a>
