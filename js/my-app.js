@@ -11,6 +11,7 @@ var app = new Framework7({
     root: '#app',
     // App Name
     name: 'KaoBeh Eat',
+    theme: 'ios',
     // App id
     id: 'com.indieDream.kaobeheat',
     precompileTemplates: false,
@@ -142,7 +143,7 @@ $(document).on('click', '.mapfindrestaurent', function () {
     circle = map.drawCircle({
         lat: map.getCenter().lat(),
         lng: map.getCenter().lng(),
-        radius: 1000,
+        radius: 100000,
         fillColor: 'yellow',
         fillOpacity: 0.5,
         strokeWeight: 0
@@ -321,7 +322,8 @@ $(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
                     price: totalPrice,
                     restaurantID: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_restaurantID,
                     restaurantImg: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_img,
-                    remark: $('.remark').val()
+                    remark: $('.remark').val(),
+                    foodImg: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_img
                 });
                 request.onsuccess = function (evt) {
                     console.debug("Insertion in DB successful");
@@ -337,14 +339,15 @@ $(document).on('page:init', '.page[data-name="foodBuy"]', function (e) {
                     var objectStoreRequest = objectStore.clear();
                     objectStoreRequest.onsuccess = function (event) {
                         var request = objectStore.put({
-                            orderID: new Date().getTime(),
+                            orderID: String(new Date().getTime()),
                             foodID: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_foodID,
                             foodName: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_name,
                             quantity: quantityV,
                             price: totalPrice,
                             restaurantID: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_restaurantID,
                             restaurantImg: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].restaurant_img,
-                            remark: $('.remark').val()
+                            remark: $('.remark').val(),
+                            foodImg: Template7.global.foodlist[e.detail.route.params.category][e.detail.route.params.index].food_img
                         });
                         request.onsuccess = function (evt) {
                             console.debug("Insertion in DB successful");
@@ -365,14 +368,17 @@ $(document).on('page:init', '.page[data-name="cart"]', function (e) {
     var objectStore = transaction.objectStore("cart");
     var request = objectStore.getAll();
     request.onsuccess = function (event) {
-        $('.restaurantImg').attr('data-background', Template7.global.url + 'img/restaurant/' + request.result[0].restaurantImg);
-        var obj = {
-            'cartFoodList': request.result
-        };
-        var template = $('#template').html();
-        var compiledTemplate = Template7.compile(template);
-        var html = compiledTemplate(obj);
-        $('.page[data-name="cart"] .page-content .list ul').html(html);
+        if (request.result.length > 0) {
+            $('.restaurantImg').attr('data-background', Template7.global.url + 'img/restaurant/' + request.result[0].restaurantImg);
+            var obj = {
+                'cartFoodList': request.result
+            };
+            var template = $('#template').html();
+            var compiledTemplate = Template7.compile(template);
+            var html = compiledTemplate(obj);
+            $('.page[data-name="cart"] .page-content .list ul').html(html);
+        }
+
     };
 });
 
@@ -380,14 +386,76 @@ $(document).on('page:init', '.page[data-name="cart"]', function (e) {
  * food_buy_update.html
  */
 $(document).on('page:init', '.page[data-name="foodBuyUpdate"]', function (e) {
+    app.dialog.preloader();
+    var orderID;
     var transaction = db.transaction(["cart"], "readwrite");
     var objectStore = transaction.objectStore("cart");
     var request = objectStore.get(e.detail.route.params.orderID);
     request.onsuccess = function (event) {
+        app.dialog.close();
+        console.log(e.detail.route.params.orderID);
         console.log(request);
-        $('.foodImg').css('background-image', 'url(' + Template7.global.url + 'img/food/' + request.result.restaurantImg + ')');
+        orderID = request.result.orderID;
+        $('.foodImg').css('background-image', 'url(' + Template7.global.url + 'img/food/' + request.result.foodImg + ')');
+        $('.foodBuyTitle').text(request.result.foodName);
+        var pickerDevice = app.picker.create({
+            inputEl: '#demo-picker-device',
+            cols: [{
+                textAlign: 'center',
+                values: (function () {
+                    var arr = [];
+                    for (var i = 1; i <= 59; i++) {
+                        arr.push(i);
+                    }
+                    return arr;
+                })(),
+            }]
+        });
+        pickerDevice.setValue([request.result.quantity]);
+        $('.remark').val(request.result.remark);
+
+        $(document).off('click').on('click', '.addToCart', function () {
+            var transaction = db.transaction(["cart"], "readwrite");
+            var objectStore = transaction.objectStore("cart");
+            objectStore.openCursor().onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    if (cursor.value.orderID === e.detail.route.params.orderID) {
+                        var updateData = cursor.value;
+
+                        updateData.quantity = pickerDevice.getValue()[0];
+                        updateData.remark = $('.remark').val();
+                        var request = cursor.update(updateData);
+                        request.onsuccess = function () {
+                            mainView.router.back({
+                                force: true,
+                                ignoreCache: true
+                            });
+
+                        };
+                    };
+
+                    // var listItem = document.createElement('li');
+                    // listItem.innerHTML = '<strong>' + cursor.value.albumTitle + '</strong>, ' + cursor.value.year;
+                    // list.appendChild(listItem);
+                    // cursor.continue();
+                } else {
+                    console.log('Entries displayed.');
+                }
+            };
+            // var request = objectStore.put({
+            //     orderID: orderID,
+            //     quantity: pickerDevice.getValue()[0],
+            //     remark: $('.remark').val()
+            // });
+            // request.onsuccess = function (evt) {
+            //     console.log("Insertion in DB successful");
+            //     mainView.router.back();
+            // };
+        });
     };
-    // 
+
+
 });
 
 
