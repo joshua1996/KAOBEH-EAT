@@ -1,7 +1,7 @@
 //phone must enable wifi to access google map locate!!!
 
 Template7.global = {
-    url: 'http://localhost/kaobeh-eat-db/'
+    url: 'http://kaobeheat.bojioong.xyz/'
 };
 //http://kaobeheat.bojioong.xyz/
 //http://localhost/kaobeh-eat-db/
